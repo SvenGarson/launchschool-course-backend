@@ -1,0 +1,18 @@
+{
+  "MSG_WELCOME" : "Welcome to Calculator! Enter your name:",
+  "MSG_ERR_NAME" : "Make sure to use a valid name!",
+  "MSG_FIRST_NUMBER" : "What's the first number?",
+  "MSG_ERR_NUMBER" : "Hmm... that doesn't look like a valid number!",
+  "MSG_SECOND_NUMBER" : "What's the second number?",
+  "MSG_OPERATOR" : "What operation would you like to perform?\n  1) add\n  2) subtract\n  3) multiply\n  4) divide",
+  "MSG_ERR_OPERATOR" : "Please choose 1,2,3 or 4.",
+  "MSG_OPERATION" : "# the two numbers...",
+  "MSG_RESULT" : "The result is #.",
+  "MSG_ANOTHER_CALC" : "Do you want to perform another calculation? (y/Y to calculate again): ",
+  "MSG_GOODBYE" : "Thank you # for using Calculator!",
+  "MSG_ADD" : "Adding",
+  "MSG_SUB" : "Subtracting",
+  "MSG_MULT" : "Multiplying",
+  "MSG_DIV" : "Dividing",
+  "MSG_YES" : "y"
+}

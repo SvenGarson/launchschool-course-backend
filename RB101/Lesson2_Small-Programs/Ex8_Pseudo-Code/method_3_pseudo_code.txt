@@ -1,0 +1,40 @@
+# functionality #
+method that takes an array of integers and returns a new array
+with every other element
+
+# reasoning #
+i.e, process one, ignore one, process once, ignore one, ...
+so every second entry in the array should be ignored
+
+# casual pseudo-code #
+create an empty array to be returned as the result
+iterate through the array starting at index ''
+  if index % 2 is 0
+    - add to the new array
+  else 
+    - go to next iterationr
+
+return the new array
+
+
+# formal pseudo-code #
+
+START
+ # given an array of integers called 'numbers'
+
+ # create new array to accumulate every second number in the array
+ SET accum = empty string
+
+ # iterate and skip every other number
+ # add the processed ones to the new array
+ SET iter = 0
+ WHILE iter < numbers.size
+  if (iter % 2) == 0
+    add numbers[accum] to the new array
+  increment iter by 1
+
+ # return the resulting array that contains every second number
+ # of the orginal array
+ RETURN accum
+
+END

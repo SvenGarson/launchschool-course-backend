@@ -1,0 +1,19 @@
+# functionality #
+method that returns the sum of two integers
+
+# casual pseudo-code #
+compute sum of the two numbers
+return the result
+
+# formal pseudo-code #
+
+START
+ # given two integers called 'a' and 'b'
+
+ # compute sum
+ SET result ⁼ a + b
+
+ # return the result
+ RETURN result
+
+END

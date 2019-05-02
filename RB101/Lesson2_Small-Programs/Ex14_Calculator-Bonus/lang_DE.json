@@ -1,0 +1,18 @@
+{
+  "MSG_WELCOME" : "Wilkommen zur Rechenmaschine! Wie ist dein Name?",
+  "MSG_ERR_NAME" : "Bitte benutze einen gültigen Namen!",
+  "MSG_FIRST_NUMBER" : "Was ist die erste Nummer?",
+  "MSG_ERR_NUMBER" : "Hmm... Das sieht nicht nach einer gültigen Zahl aus!",
+  "MSG_SECOND_NUMBER" : "Was ist die zweite Nummer?",
+  "MSG_OPERATOR" : "Welche Operation möchtest Du durchführen?\n  1) Addieren\n  2) Subtrahieren\n  3) Multiplizieren\n  4) Dividieren",
+  "MSG_ERR_OPERATOR" : "Bitte wähle 1,2,3 or 4.",
+  "MSG_OPERATION" : "# der zwei Nummern...",
+  "MSG_RESULT" : "Das Resultat ist #.",
+  "MSG_ANOTHER_CALC" : "Möchtest Du noch eine Rechnung durchführen? (j/J um noch einmal zu rechnen): ",
+  "MSG_GOODBYE" : "Danke # für das benutzen der Rechenmaschine!",
+  "MSG_ADD" : "Addieren",
+  "MSG_SUB" : "Subtrahieren",
+  "MSG_MULT" : "Multiplizieren",
+  "MSG_DIV" : "Dividieren",
+  "MSG_YES" : "j"
+}

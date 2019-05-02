@@ -1,0 +1,26 @@
+# functionality #
+method that takes an array of strings and returns a string that
+is all those string concatenated together
+
+# casual pseudo-code #
+create and empty string
+iterate over every string in the array
+  - concatenate string onto the created string
+return the concatenated string
+
+# formal pseudo-code #
+
+START
+ # given an array of strings called 'words'
+
+ # create new string to concatenate onto
+ SET accum = empty string
+
+ # append every string in array onto accum
+ WHILE str in words
+  accum += str
+
+ # return the resulting string
+ RETURN accum
+
+END
