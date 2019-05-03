@@ -18,12 +18,12 @@ def valid_float_str?(flt_str)
   # returns false if flt_str has no integer
   # part before the fractional part
   # also treat non-positive numbers as invalid
-  (flt_str.to_f.to_s == flt_str) && flt_str.to_f > 0.0
+  (flt_str.to_f.to_s == flt_str) && (flt_str.to_f > 0.0)
 end
 
 def valid_int_str?(int_str)
   # also treat non-positive numbers as invalid
-  (int_str.to_i.to_s == int_str) && int_str.to_i > 0
+  (int_str.to_i.to_s == int_str) && (int_str.to_i > 0)
 end
 
 def get_valid_float(msg, msg_err = nil)
