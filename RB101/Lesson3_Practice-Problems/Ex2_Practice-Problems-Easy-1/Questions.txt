@@ -1,0 +1,43 @@
+# Q1
+1
+2
+2
+3
+
+# Q2
+1) operator that checks whether it's 2 operands are 'not equal'
+2) inverts the truthiness of it's operand, since in ruby a string is
+   truthy, using the bang operator on a string makes it falsey
+3) the bang operator is usually used at the end of destructive
+   method names. In order to call the .! method on an object, and have the
+   same effect as preceeding it with the bang operator, the dot notation
+   has to be used.
+4) no meaning, syntax error?
+5) ? at the end of a method call, which is convention if a method returns
+   true or false
+6) negation of negation which end up the same as using no bang operator at all
+
+# Q3
+advice.gsub!('important','urgent')
+
+# Q4
+delete_at removed object at argument index, i.e the number 2
+delete removed all items from array that are equal to the argument, i.e the number 1
+
+# Q5
+(10..100).cover?(42)
+
+# Q6
+1) famous_words = famous_words.prepend('Four score and ')
+2) famous_words = 'Four score and ' + famous_words
+
+# Q7
+42
+
+# Q8
+flintstones.flatten!
+
+# Q9
+flintstones.assoc('Barney')
+
+  

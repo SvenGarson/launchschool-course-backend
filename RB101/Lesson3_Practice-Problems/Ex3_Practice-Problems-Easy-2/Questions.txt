@@ -1,0 +1,36 @@
+# Q1
+ages.key?('Spot')
+ages.include?('Spot')
+ages.member?('Spot')
+
+# Q2
+munster_description.swapcase!
+munster_description.capitalize!
+munster_description.downcase!
+munster_description.upcase!
+
+# Q3
+ages.merge!(additional_ages)
+
+# Q4
+advice.include?('Dino')
+
+# Q5
+flintstones = %w(Fred Barney Wilma Betty BamBam Pebbles)
+
+# Q6
+flintstones << 'Dino'
+flintstones.push('Dino')
+flintstones.append('Dino')
+
+# Q7
+flintstones.append('Dino', 'Hoppy')
+
+# Q8
+slice!((0..38))
+
+# Q9
+statement.count('t')
+
+# Q10
+centered = title.center(40)
