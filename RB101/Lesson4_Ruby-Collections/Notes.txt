@@ -76,3 +76,8 @@ and correctness of the alorithm.
     - A
     - B
     - ...
+
+
+# Ruby Collections #
+
+- unneeded block parameters should be names '_'
