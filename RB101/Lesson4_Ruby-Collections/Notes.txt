@@ -81,3 +81,17 @@ and correctness of the alorithm.
 # Ruby Collections #
 
 - unneeded block parameters should be names '_'
+- definition of:
+  -> iteration
+  -> selection
+  -> transformation
+
+  Also, if for instance a method takes an array as parameter,
+  and the method creates and returns a new array containing
+  transformed values of the original array, is that considered
+  transormation? What if not all entries are transformed and 
+  added to the new array? Does it have to be all? 
+  Does it have to be the original object that is transformed?
+
+- one can prematurely exit an iteration method loop by using
+  break inside the block
