@@ -1,0 +1,54 @@
+# sorting #
+
+- sort_by wtf?
+
+- shallow & deep copies
+- dup, clone and freeze
+
+- Don't forget that shallow copies of objects share
+  nested object with the original!
+
+# Evaluating code #
+
+- type of actin performed?
+- what object is the action performed on?
+- side effects? [output?; destructive?]
+- the return value?
+- the return value used? If yes how?
+
+Line x || a - b:
+    - Action            => Method call / Block exec. / conditional / ...
+    - Object            => Object method is called on / arguments / ...
+    - Side Effect       => n/a
+    - Return value      => return value of expression / statement / message / ..
+    - Return value used => does anything use that return value ?
+
+- Do not mutate the currently iterated collection!
+  (unless intended ;) )
+
+- When reading/writing code pay attention to:
+  - Return values of expressions, statement, method calls
+    and blocks, both explicit and implicit
+  - Side effects of said 'entities'
+  - Blocks, its parameters and it's return value
+
+# Objects #
+
+- Recap objects as pointers, when which object is changed
+  or the reference itself.
+
+# Methods #
+
+- what is the ruby % method exactly?
+  It ignored the sign of the left operand but not
+  the sign of the right operand
+
+- Enumerable#map on hashmap, how to pass the parameters since
+  the block provided to Enumerable#map is supposed to have one
+  parameter handed to it?
+
+  1) hsh.map do |key, value| end
+  2) hsh.map do |hash| end
+  3) hsh.map do |(key, value)| end
+
+  Or are they all valid? Sorcery?
