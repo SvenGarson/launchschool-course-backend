@@ -16,7 +16,7 @@ A problem contains/can contain:
   - Type of input
   - Type of output
   - Test cases
-  - Implicits and explicit requirements
+  - Implicit and explicit requirements
 
 Question to ask myself/interviewer:
   - Clarify unknown/s
