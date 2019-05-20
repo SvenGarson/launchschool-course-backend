@@ -80,7 +80,7 @@ and correctness of the alorithm.
 
 # Ruby Collections #
 
-- unneeded block parameters should be names '_'
+- unneeded block parameters should be named '_'
 - definition of:
   -> iteration
   -> selection
