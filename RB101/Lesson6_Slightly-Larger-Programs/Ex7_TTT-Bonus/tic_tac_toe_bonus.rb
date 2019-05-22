@@ -1,14 +1,16 @@
 require 'pry'
 
-ROUND_POINTS = 5
+TAG_PLAYER = 'Player'
+TAG_COMPUTER = 'Computer'
+TAG_CHOOSE = 'choose'
+STARTING_PLAYER = TAG_CHOOSE
+ROUND_POINTS = 3
 INITIAL_MARKER = ' '
 PLAYER_MARKER = 'X'
 COMPUTER_MARKER = 'O'
 WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] + # rows
                 [[1, 4, 7], [2, 5, 8], [3, 6, 9]] + # columns
                 [[1, 5, 9], [3, 5, 7]]
-TAG_PLAYER = 'Player'
-TAG_COMPUTER = 'Computer'
 
 def prompt(msg)
   puts "=> #{msg}"
@@ -77,26 +79,40 @@ def player_places_piece!(board)
   board[square] = PLAYER_MARKER
 end
 
-def risky_cell_for_computer(board)
+def risky_cell_for_owner(board, owner_marker)
   for line in WINNING_LINES do 
-    player_marked = line.select do |cell_number|
-      board[cell_number] == PLAYER_MARKER
-    end
-    if player_marked.size == 2
-      free = (line - player_marked).first
-      return free if board[free] == INITIAL_MARKER
+    cells_marked_owner = line.select { |cell| board[cell] == owner_marker }
+    cells_marked_initial = line.select { |cell| board[cell] == INITIAL_MARKER }
+    if cells_marked_owner.size == 2 && cells_marked_initial.size == 1
+      return cells_marked_initial.first
     end
   end
   nil
 end
 
+def cell_free?(board, cell)
+  board[cell] == INITIAL_MARKER
+end
+
+def risky_cell_for_computer(board)
+  risky_cell_for_owner(board, PLAYER_MARKER)
+end
+
+def risky_cell_for_player(board)
+  risky_cell_for_owner(board, COMPUTER_MARKER)
+end
+
 def computer_places_piece!(board)
-  risky_cell = risky_cell_for_computer(board)
-  if risky_cell
-    board[risky_cell] = COMPUTER_MARKER
-  else
-    board[random_empty_cell(board)] = COMPUTER_MARKER
-  end
+  chosen_cell = if risky_cell_for_player(board)
+                  risky_cell_for_player(board)
+                elsif risky_cell_for_computer(board)
+                  risky_cell_for_computer(board)
+                elsif cell_free?(board, 5)
+                  5
+                else
+                  random_empty_cell(board)
+                end
+  board[chosen_cell] = COMPUTER_MARKER
 end
 
 def board_full?(board)
@@ -122,22 +138,57 @@ def match_over?(score_player, score_computer)
   score_player >= ROUND_POINTS || score_computer >= ROUND_POINTS
 end
 
+def starting_player_choice
+  loop do
+    prompt "Who shall go first. Player or Computer?"
+    answer = gets.chomp.downcase
+    if answer == TAG_PLAYER.downcase
+      return TAG_PLAYER
+    elsif answer == TAG_COMPUTER.downcase
+      return TAG_COMPUTER
+    else
+      prompt "Please choose Player or Computer."
+    end
+  end
+end
+
+def place_piece!(board, current_player)
+  if current_player == TAG_PLAYER
+    player_places_piece!(board)
+  elsif current_player == TAG_COMPUTER
+    computer_places_piece!(board)
+  end
+end
+
+def alternate_player(current_player)
+  (current_player == TAG_PLAYER) ? TAG_COMPUTER : TAG_PLAYER
+end
+
+# game state
 score_player = 0
 score_computer = 0
 
+# set mode
+starting_player = STARTING_PLAYER
+if starting_player == TAG_CHOOSE
+  starting_player = starting_player_choice
+end
+
+# game loop
 loop do
   board = initialize_board
+  current_player = starting_player
 
   loop do
+
     display_board(board, score_player, score_computer)
-
-    player_places_piece!(board)
-    break if someone_won?(board) || board_full?(board)
-
-    computer_places_piece!(board)
+    place_piece!(board, current_player)
+    current_player = alternate_player(current_player)
     break if someone_won?(board) || board_full?(board)
 
   end
+
+  display_board(board, score_player, score_computer)
 
   winner = ''
   if someone_won?(board)
@@ -147,7 +198,7 @@ loop do
     score_computer += 1 if winner == TAG_COMPUTER
 
     display_board(board, score_player, score_computer)
-    prompt "#{winner} won!"
+    prompt "#{winner} won the round!"
   else
     prompt "It's a tie!"
   end

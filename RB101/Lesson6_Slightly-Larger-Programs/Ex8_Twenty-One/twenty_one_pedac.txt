@@ -1,0 +1,117 @@
+                                # Twenty-One #
+
+input
+output
+range
+sub-process
+explicit and implicit
+
+# === Processing === #
+# Rules:
+  -> Explicit:
+      - Deck: 42 cards; 4-suits (h,d,c,s); 13 types (2 to A)
+      - Goal: get as close to 21 as possible
+      - Loosing condition: 'bust' when combined values > 21
+      - Players: Player and dealer
+      - Both player receive 2 random cards to start
+      - Player can see his own cards
+      - Player can see one of he dealer's cards
+        Keep the card, the dealer got most recently hidden
+      - Card value:
+          - 2 to 10 : face value
+          - K;Q;J   : 10
+          - A       : 1 or 11
+      - Value of Aces in hand changes everytime a card is drawn
+      - Rotation:
+          - Player goes first
+      - Player turn:
+          - valid input: 'hit' or 'stay':
+              -> hit:   get another card
+              -> stay:  nothing
+          - turn over when:
+              -> stay:  dealers turn
+              -> bust:  dealer wins immediately
+      - Dealer turn:
+          - hit until hand value >= 17
+          - turn over when:
+              -> hand value >= 17
+              -> bust:  player wins immediately
+      - Post turn:
+          - If player AND dealer stay:
+              -> Highest value, i.e closer to 21 wins
+  -> Test cases:
+      - Value of Ace's:
+          - The value of the hand is re-evaluated everytime a card is drawn!
+          - [2,A,5]   => 18 because 2+11+5(18)    does not exceed 21
+          - [2,A,5,A] => 19 because 2+11+5+11(29) does exceed 21
+
+  -> Questions:
+      Q) Which cards of the dealer can the player see? First one?
+         One of the first two? The one drawn lastly?
+            A) Always keep the lastly drawn dealer card hidden
+               then turn over wen a new one is drawn 
+      Q) How to count score when holding multiple Aces?
+            A) Everytime a card is drawn, all the Aces's values are
+               change to not go over 21
+
+# === Roughen 2 === #
+1) Initialize and shuffle deck
+2) Deal 2 cards to player, then dealer
+3) Show cards
+    - Player: both
+    - Dealer: all but last
+4) Player turn:
+    - Until stay || bust
+5) Dealer turn:
+    - Until >= 17 || bust
+6) Cases:
+    A) Anyone bust => the opponent wins ->(?)
+    B) Both stayed => compare score ->(?)
+    C) Another round ->(3)
+7) Show winner or tie
+8) prompt for another round. If yes -> (1)
+
+# === Sub-Processes === #
+
+# === Computing hand score === #
+  if no Aces -> score is sum of fae values
+  else
+    sum = face value card sum
+    aces = how many aces in hand
+    i = (-21.0 + sum + 11.0 * aces) / 10.0
+    i_rnd_up = i.ceil
+    score = sum + (aces-i_rnd_up) * 11.0 + i_rnd_up
+
+# === Which hands to draw === #
+  Player: draw all
+  Dealer: draw all until last
+
+# === Datastructure === #
+
+# === Deck and cards === #
+  Card(Hash)
+    suit: 'type'
+    description: 'repr'
+    value: actuay value (Ace is special case)
+
+  Deck:
+    - [2, 10] + [J - A] -> spade
+    - [2, 10] + [J - A] -> heart
+    - [2, 10] + [J - A] -> club
+    - [2, 10] + [J - A] -> diamond
+    4 x 13 cards = 52
+
+# === Test === #
+  base_cards = {
+    2: { descr: 'Two', value: 2},
+    10: { descr: 'Ten', value: 10},
+    K: { descr: 'King', value: 10}
+  }
+
+  deck_cards = {
+    2: { descr: 'Two', value: 2, suit: 'Spades'},
+    2: { descr: 'Two', value: 2, suit: 'Diamonds'},
+    2: { descr: 'Two', value: 2, suit: 'Clubs'},
+    2: { descr: 'Two', value: 2, suit: 'Hearts'},
+  }
+
