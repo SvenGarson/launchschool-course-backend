@@ -1,26 +1,36 @@
-require 'pry'
-
+# CONSTANTS
 TAG_PLAYER = 'Player'
 TAG_COMPUTER = 'Computer'
 TAG_CHOOSE = 'choose'
+
 STARTING_PLAYER = TAG_CHOOSE
-ROUND_POINTS = 3
+
+ROUND_POINTS = 5
+
 INITIAL_MARKER = ' '
 PLAYER_MARKER = 'X'
 COMPUTER_MARKER = 'O'
+
 WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] + # rows
                 [[1, 4, 7], [2, 5, 8], [3, 6, 9]] + # columns
                 [[1, 5, 9], [3, 5, 7]]
 
+# METHODS
 def prompt(msg)
   puts "=> #{msg}"
 end
 
+def clear_screen
+  system('cls') unless system('clear')
+end
+
+# rubocop:disable Metrics/MethodLength
 # rubocop:disable Metrics/AbcSize
 def display_board(board, score_player, score_computer)
-  system('cls') unless system('clear')
+  clear_screen
+
   puts "You are #{PLAYER_MARKER}. Computer is #{COMPUTER_MARKER}."
-  puts "Player #{score_player}/#{ROUND_POINTS} " +
+  puts "Player #{score_player}/#{ROUND_POINTS} " \
        "Computer #{score_computer}/#{ROUND_POINTS}"
   puts ""
   puts "     |     |"
@@ -36,6 +46,7 @@ def display_board(board, score_player, score_computer)
   puts "     |     |"
   puts ""
 end
+# rubocop:enable Metrics/MethodLength
 # rubocop:enable Metrics/AbcSize
 
 def initialize_board
@@ -64,7 +75,7 @@ def joinor(arr, sep = ', ', sep_end = 'or')
     copy = arr.dup
     copy[-1] = "#{sep_end} #{copy[-1]}"
     copy.join(sep)
-  end  
+  end
 end
 
 def player_places_piece!(board)
@@ -80,7 +91,7 @@ def player_places_piece!(board)
 end
 
 def risky_cell_for_owner(board, owner_marker)
-  for line in WINNING_LINES do 
+  WINNING_LINES.each do |line|
     cells_marked_owner = line.select { |cell| board[cell] == owner_marker }
     cells_marked_initial = line.select { |cell| board[cell] == INITIAL_MARKER }
     if cells_marked_owner.size == 2 && cells_marked_initial.size == 1
@@ -161,7 +172,7 @@ def place_piece!(board, current_player)
 end
 
 def alternate_player(current_player)
-  (current_player == TAG_PLAYER) ? TAG_COMPUTER : TAG_PLAYER
+  current_player == TAG_PLAYER ? TAG_COMPUTER : TAG_PLAYER
 end
 
 # game state
@@ -169,6 +180,7 @@ score_player = 0
 score_computer = 0
 
 # set mode
+
 starting_player = STARTING_PLAYER
 if starting_player == TAG_CHOOSE
   starting_player = starting_player_choice
@@ -180,12 +192,10 @@ loop do
   current_player = starting_player
 
   loop do
-
     display_board(board, score_player, score_computer)
     place_piece!(board, current_player)
     current_player = alternate_player(current_player)
     break if someone_won?(board) || board_full?(board)
-
   end
 
   display_board(board, score_player, score_computer)
@@ -205,7 +215,7 @@ loop do
 
   if match_over?(score_player, score_computer)
     prompt "#{winner} wins the game!"
-    break;
+    break
   else
     prompt "Play again? (y or n)"
     answer = gets.chomp

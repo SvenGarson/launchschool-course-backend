@@ -1,11 +1,3 @@
-                                # Twenty-One #
-
-input
-output
-range
-sub-process
-explicit and implicit
-
 # === Processing === #
 # Rules:
   -> Explicit:
