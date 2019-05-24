@@ -2,7 +2,7 @@
 PROMPT = '=>'
 
 CARD_DESCR_MAXL = 22
-
+CARD_DESCR_SEP = ' of '
 SHUFFLES = 3
 
 VALUE_WIN = 21
@@ -26,40 +26,43 @@ STATE_BUST = 0x04
 SLEEP_TIME_PLAYER = 1.0
 SLEEP_TIME_DEALER = 2.0
 
+EXEC_TEST_RUN = false
+
 TAG_ACE = 'Ace'
 
 SUITS = ['Hearts', 'Diamonds', 'Clubs', 'Spades']
 
 BASE_CARDS = [
-  {KEY_TAG => 'Two',    KEY_VALUE => 2},
-  {KEY_TAG => 'Three',  KEY_VALUE => 3},
-  {KEY_TAG => 'Four',   KEY_VALUE => 4},
-  {KEY_TAG => 'Five',   KEY_VALUE => 5},
-  {KEY_TAG => 'Six',    KEY_VALUE => 6},
-  {KEY_TAG => 'Seven',  KEY_VALUE => 7},
-  {KEY_TAG => 'Eight',  KEY_VALUE => 8},
-  {KEY_TAG => 'Nine',   KEY_VALUE => 9},
-  {KEY_TAG => 'Ten',    KEY_VALUE => 10},
-  {KEY_TAG => 'Jack',   KEY_VALUE => 10},
-  {KEY_TAG => 'Queen',  KEY_VALUE => 10},
-  {KEY_TAG => 'King',   KEY_VALUE => 10},
-  {KEY_TAG => TAG_ACE,  KEY_VALUE => 11}
+  { KEY_TAG => 'Two',    KEY_VALUE => 2 },
+  { KEY_TAG => 'Three',  KEY_VALUE => 3 },
+  { KEY_TAG => 'Four',   KEY_VALUE => 4 },
+  { KEY_TAG => 'Five',   KEY_VALUE => 5 },
+  { KEY_TAG => 'Six',    KEY_VALUE => 6 },
+  { KEY_TAG => 'Seven',  KEY_VALUE => 7 },
+  { KEY_TAG => 'Eight',  KEY_VALUE => 8 },
+  { KEY_TAG => 'Nine',   KEY_VALUE => 9 },
+  { KEY_TAG => 'Ten',    KEY_VALUE => 10 },
+  { KEY_TAG => 'Jack',   KEY_VALUE => 10 },
+  { KEY_TAG => 'Queen',  KEY_VALUE => 10 },
+  { KEY_TAG => 'King',   KEY_VALUE => 10 },
+  { KEY_TAG => TAG_ACE,  KEY_VALUE => 11 }
 ]
 
 # METHODS
+
 def prompt(msg)
   puts "#{PROMPT} #{msg}"
 end
 
 def sorted_card_tags
-  SUITS.sort_by { |suit| suit.length }
+  SUITS.sort_by(&:length)
 end
 
 def sorted_card_suits
   tags = BASE_CARDS.map do |card|
-           card[KEY_TAG]
-         end
-  tags.sort_by { |str| str.size}
+    card[KEY_TAG]
+  end
+  tags.sort_by(&:size)
 end
 
 def max_tag_length
@@ -71,7 +74,7 @@ def max_suit_length
 end
 
 def description_length
-  max_tag_length + ' of '.size + max_suit_length + 2
+  max_tag_length + CARD_DESCR_SEP.size + max_suit_length + 2
 end
 
 def deck_init
@@ -90,9 +93,11 @@ def deck_shuffle!(deck)
   SHUFFLES.times { deck.shuffle! }
 end
 
-def entity_init
+def entity_init(starting_hand = nil)
+  cards = []
+  cards += starting_hand if starting_hand
   {
-    KEY_CARDS => [],
+    KEY_CARDS => cards,
     KEY_VALUE => 0,
     KEY_STATE => STATE_NONE
   }
@@ -138,8 +143,7 @@ def card_count(entity)
   cards(entity).size
 end
 
-def evaluate_hand!(entity)
-  cards = cards(entity)
+def compute_hand_value(cards)
   sum_without_aces = sum_cards_non_ace(cards)
   aces = aces(cards)
   as_eleven = aces
@@ -150,11 +154,17 @@ def evaluate_hand!(entity)
     break if as_eleven == 0 || test_sum <= VALUE_WIN
     as_eleven -= 1
   end
-  entity[KEY_VALUE] = sum_without_aces + as_eleven * 11 + as_one * 1
+  sum_without_aces + as_eleven * 11 + as_one * 1
+end
+
+def evaluate_hand!(entity)
+  value = compute_hand_value(cards(entity))
+  entity[KEY_VALUE] = value
+  value
 end
 
 def deal_card_to_and_evaluate!(entity, deck, how_many = 1)
-  how_many.times do 
+  how_many.times do
     break if deck.empty?
     entity[KEY_CARDS].push(deck.pop)
     evaluate_hand!(entity)
@@ -162,14 +172,14 @@ def deal_card_to_and_evaluate!(entity, deck, how_many = 1)
 end
 
 def print_div_center(text_left, text_right, cell_width, sep = '-')
-    str_center_left = text_left.center(cell_width, sep)
-    str_center_right = text_right.center(cell_width, sep)
-    puts format("+%-s+%-s+", str_center_left, str_center_right)
+  str_center_left = text_left.center(cell_width, sep)
+  str_center_right = text_right.center(cell_width, sep)
+  puts format("+%-s+%-s+", str_center_left, str_center_right)
 end
 
 def card_description(card)
   if card
-    card_tag(card) + ' of ' + card_suit(card)
+    card_tag(card) + CARD_DESCR_SEP + card_suit(card)
   else
     ''
   end
@@ -179,6 +189,7 @@ def clear_screen
   system('cls') unless system('clear')
 end
 
+# rubocop:disable Metrics/MethodLength, Metrics/AbcSize
 def show_cards(player, dealer, reveal_dealer = false)
   clear_screen
   cell_width = description_length
@@ -190,7 +201,7 @@ def show_cards(player, dealer, reveal_dealer = false)
 
   # cards
   dealer_card_count = card_count(dealer)
-  max_card_count = [card_count(player),dealer_card_count].max
+  max_card_count = [card_count(player), dealer_card_count].max
   cards_player = cards(player)
   cards_dealer = cards(dealer)
 
@@ -201,18 +212,25 @@ def show_cards(player, dealer, reveal_dealer = false)
     card_descr_player = card_description(card_player)
     card_descr_dealer = card_description(card_dealer)
 
-    is_last_dealer_card = (index == dealer_card_count-1)
-    card_descr_dealer = '???' if is_last_dealer_card 
+    is_last_dealer_card = (index == dealer_card_count - 1)
+
+    if is_last_dealer_card && !reveal_dealer
+      card_descr_dealer = '???'
+    end
 
     print_div_center(card_descr_player, card_descr_dealer, cell_width, ' ')
-
   end
 
   print_div_center('', '', cell_width, '-')
   print_div_center('hand value', 'hand value', cell_width, '-')
-  print_div_center(hand_value(player).to_s, hand_value(dealer).to_s, cell_width, '-')
+
+  hand_value_player = hand_value(player).to_s
+  hand_value_dealer = reveal_dealer ? hand_value(dealer).to_s : '?'
+
+  print_div_center(hand_value_player, hand_value_dealer, cell_width, '-')
   print_div_center('', '', cell_width, '-')
 end
+# rubocop:enable Metrics/MethodLength, Metrics/AbcSize
 
 def prompt_choice
   choice = nil
@@ -226,7 +244,7 @@ def prompt_choice
   choice
 end
 
-def set_state!(entity, state)
+def state!(entity, state)
   entity[KEY_STATE] = state
 end
 
@@ -234,11 +252,11 @@ def bust?(entity)
   hand_value(entity) > VALUE_WIN
 end
 
-def is_state?(entity, state)
-  get_state(entity) == state
+def state?(entity, state)
+  state(entity) == state
 end
 
-def get_state(entity)
+def state(entity)
   entity[KEY_STATE]
 end
 
@@ -252,24 +270,21 @@ def player_turn(player, dealer, deck)
       deal_card_to_and_evaluate!(player, deck, 1)
       show_cards(player, dealer)
     elsif choice == CHOICE_STAY.downcase
-      set_state!(player, STATE_STAY)
+      state!(player, STATE_STAY)
     end
 
-    set_state!(player, STATE_BUST) if bust?(player)
+    state!(player, STATE_BUST) if bust?(player)
 
-    break if is_state?(player, STATE_STAY) || is_state?(player, STATE_BUST)
+    break if state?(player, STATE_STAY) || state?(player, STATE_BUST)
   end
 end
 
 def dealer_turn(player, dealer, deck)
   loop do
-  
-    curr_value = hand_value(dealer)
-
     prompt('Dealer is thinking...')
     sleep(SLEEP_TIME_DEALER)
 
-    if curr_value < VALUE_DEALER_MIN
+    if hand_value(dealer) < VALUE_DEALER_MIN
       prompt('Dealer is drawing a card...')
       sleep(SLEEP_TIME_DEALER)
       deal_card_to_and_evaluate!(dealer, deck, 1)
@@ -277,25 +292,29 @@ def dealer_turn(player, dealer, deck)
     else
       prompt('Dealer stays.')
       sleep(SLEEP_TIME_DEALER)
-      set_state!(dealer, STATE_STAY)
+      state!(dealer, STATE_STAY)
     end
 
-    set_state!(dealer, STATE_BUST) if bust?(dealer)
+    state!(dealer, STATE_BUST) if bust?(dealer)
 
-    break if is_state?(dealer, STATE_STAY) || is_state?(dealer, STATE_BUST)
+    break if state?(dealer, STATE_STAY) || state?(dealer, STATE_BUST)
   end
 end
 
-def showdown(player, dealer)
+def showdown_result(player, dealer)
   value_player = hand_value(player)
   value_dealer = hand_value(dealer)
   if value_player > value_dealer
-    prompt("Player wins with #{value_player}/21")
+    "Player wins with #{value_player}/21"
   elsif value_dealer > value_player
-    prompt("Dealer wins with #{value_dealer}/21")
+    "Dealer wins with #{value_dealer}/21"
   else
-    prompt("Tie with Player and Dealer #{value_player}/21")
+    "Tie! Both player and dealer #{value_player}/21"
   end
+end
+
+def showdown?(player, dealer)
+  state?(player, STATE_STAY) && state?(dealer, STATE_STAY)
 end
 
 def play_again?
@@ -304,42 +323,83 @@ def play_again?
   answer.start_with?('y')
 end
 
+# rubocop:disable Style/SpaceInsideParens, Metrics/MethodLength, Metrics/AbcSize
+# rubocop:disable Metrics/LineLength, Style/SpaceAfterComma, Style/VariableName
+def test_run
+  # extract base cards
+  c2 = BASE_CARDS[0]
+  c6 = BASE_CARDS[4]
+  c9 = BASE_CARDS[7]
+  cJ = BASE_CARDS[9]
+  cK = BASE_CARDS[11]
+  cA = BASE_CARDS[12]
+  # test cases
+  results = []
+  results << (evaluate_hand!(entity_init                                    ) == 0 )
+  results << (evaluate_hand!(entity_init([c2, c6, c9])                      ) == 17)
+  results << (evaluate_hand!(entity_init([c2, c9, c6, c2, c2])              ) == 21)
+  results << (evaluate_hand!(entity_init([cJ, cK])                          ) == 20)
+  results << (evaluate_hand!(entity_init([cJ, cK, cA])                      ) == 21)
+  results << (evaluate_hand!(entity_init([cJ, cK, c9])                      ) == 29)
+  results << (evaluate_hand!(entity_init([cJ, c9, c6, c2])                  ) == 27)
+  results << (evaluate_hand!(entity_init([cJ, c9, cA])                      ) == 20)
+  results << (evaluate_hand!(entity_init([cA, cA, cA, cA])                  ) == 14)
+  results << (evaluate_hand!(entity_init([cA,cA,cA,cA,cA,cA,cA,cA,cA,cA,cA])) == 21)
+  # test result
+  results.each_with_index do |res, index|
+    puts "Test case (#{index}) -> #{res}"
+  end
+  success = results.all? { |test| test }
+  result_str = success ? "SUCCESS" : 'FAILURE'
+  puts format("Test is a %s", result_str)
+end
+# rubocop:enable Style/SpaceInsideParens, Metrics/MethodLength, Metrics/AbcSize
+# rubocop:enable Metrics/LineLength, Style/SpaceAfterComma, Style/VariableName
+
+# optional test run
+if EXEC_TEST_RUN
+  prompt "=== Executing test run ==="
+  test_run
+  exit!(true)
+end
+
 # GAME LOGIC
 loop do
-  
   deck = deck_init
   deck_shuffle!(deck)
 
   player = entity_init
   dealer = entity_init
-  
+
   deal_card_to_and_evaluate!(player, deck, 2)
   deal_card_to_and_evaluate!(dealer, deck, 2)
-  
   show_cards(player, dealer)
+  end_game_message = nil
 
   loop do
     player_turn(player, dealer, deck)
-    if is_state?(player, STATE_BUST)
-      prompt("Player bust. Dealer wins!")
+    if bust?(player)
+      end_game_message = "Player bust. Dealer wins!"
       break
     end
 
     dealer_turn(player, dealer, deck)
-    if is_state?(dealer, STATE_BUST)
-      prompt("Dealer bust. Player wins!")
+    if bust?(dealer)
+      end_game_message = "Dealer bust. Player wins!"
       break
     end
 
-    if is_state?(player, STATE_STAY) && is_state?(dealer, STATE_STAY)
-      showdown(player, dealer)
+    if showdown?(player, dealer)
+      end_game_message = showdown_result(player, dealer)
       break
     end
-
   end
 
-  break unless play_again?
+  show_cards(player, dealer, true)
+  prompt(end_game_message)
 
+  break unless play_again?
 end
 
 prompt("Thank you for playing Twenty-One!")
+print("\n")
