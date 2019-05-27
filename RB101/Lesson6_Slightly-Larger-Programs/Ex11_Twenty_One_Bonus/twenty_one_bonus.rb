@@ -1,6 +1,11 @@
 # CONSTANTS
 PROMPT = '=>'
 
+MAX_SCORE = 5
+
+WINNING_HAND_VALUE = 21
+DEALER_TARGET_HAND_VALUE = 17
+
 STATE_INIT = :state_init
 STATE_STAY = :state_stay
 STATE_BUST = :state_bust
@@ -52,8 +57,24 @@ def entity_init(starting_hand = nil)
   {
     cards: cards,
     value: 0,
-    state: STATE_INIT
+    state: STATE_INIT,
+    score: 0
   }
+end
+
+def entity_reset!(entity, reset_score=false)
+  entity[:cards] = []
+  entity[:value] = 0
+  entity[:state] = STATE_INIT
+  entity[:score] = 0 if reset_score
+end
+
+def score(entity)
+  entity[:score]
+end
+
+def wins_point!(entity, points=1)
+  entity[:score] += points
 end
 
 def cards(entity)
@@ -108,7 +129,7 @@ def compute_hand_value(cards)
   loop do
     as_one = aces - as_eleven
     test_sum = sum_without_aces + (as_eleven * 11) + (as_one * 1)
-    break if as_eleven == 0 || test_sum <= 21
+    break if as_eleven == 0 || test_sum <= WINNING_HAND_VALUE
     as_eleven -= 1
   end
   sum_without_aces + as_eleven * 11 + as_one * 1
@@ -148,6 +169,11 @@ end
 def show_gui_players
   show_gui_divider_with
   show_gui_divider_with('Player', 'Dealer')
+end
+
+def show_gui_score(player, dealer)
+  show_gui_divider_with("Wins #{score(player)}/#{MAX_SCORE}",
+                        "Wins #{score(dealer)}/#{MAX_SCORE}")
   show_gui_divider_with
 end
 
@@ -169,14 +195,22 @@ end
 def show_gui_values(player, dealer, reveal_dealer=false)
   show_gui_divider_with
   show_gui_divider_with('hand value', 'hand value')
-  show_gui_divider_with(hand_value(player).to_s,
-                        reveal_dealer ? hand_value(dealer).to_s : '?')
+
+  player_value = hand_value(player).to_s + " of #{WINNING_HAND_VALUE}"
+  dealer_value = if reveal_dealer
+                   (hand_value(dealer).to_s + " of #{WINNING_HAND_VALUE}")
+                 else
+                   '?'
+                 end
+
+  show_gui_divider_with(player_value, dealer_value)
   show_gui_divider_with
 end
 
 def show_gui(player, dealer, reveal_dealer = false)
   clear_screen
   show_gui_players
+  show_gui_score(player, dealer)
   show_gui_cards(player, dealer, reveal_dealer)
   show_gui_values(player, dealer, reveal_dealer)
 end
@@ -205,7 +239,7 @@ def state!(entity, state)
 end
 
 def bust?(entity)
-  hand_value(entity) > 21
+  hand_value(entity) > WINNING_HAND_VALUE
 end
 
 def state?(entity, state)
@@ -260,7 +294,7 @@ def dealer_turn(player, dealer, deck)
     prompt('Dealer is thinking...')
     sleep(2.0)
 
-    if hand_value(dealer) < 17
+    if hand_value(dealer) < DEALER_TARGET_HAND_VALUE
       dealer_hit(dealer, deck)
       show_gui(player, dealer)
     else
@@ -277,11 +311,13 @@ def showdown_result(player, dealer)
   value_player = hand_value(player)
   value_dealer = hand_value(dealer)
   if value_player > value_dealer
-    "Player wins with #{value_player}/21"
+    wins_point!(player)
+    "Player wins round with #{value_player}/#{WINNING_HAND_VALUE}"
   elsif value_dealer > value_player
-    "Dealer wins with #{value_dealer}/21"
+    wins_point!(dealer)
+    "Dealer wins round with #{value_dealer}/#{WINNING_HAND_VALUE}"
   else
-    "Tie! Both player and dealer #{value_player}/21"
+    "Tie! Both player and dealer #{value_player}/#{WINNING_HAND_VALUE}"
   end
 end
 
@@ -289,10 +325,10 @@ def showdown?(player, dealer)
   state?(player, STATE_STAY) && state?(dealer, STATE_STAY)
 end
 
-def play_again?
+def play_next_round?
   answer = nil
   loop do
-    prompt("Play again? (y or n)")
+    prompt("Play next round? (y or n)")
     answer = gets.chomp.downcase
     break if %w(yes y no n).include?(answer)
     prompt("Please enter yes, y, no or n.")
@@ -300,42 +336,67 @@ def play_again?
   answer.start_with?('y')
 end
 
+def game_over?(player, dealer)
+  score(player) >= MAX_SCORE || score(dealer) >= MAX_SCORE
+end
+
+def game_result(player, dealer)
+  if score(player) > score(dealer)
+    "Player wins the game!"
+  elsif score(dealer) > score(player)
+    "Dealer wins the game!"
+  else
+    "It's a tie, nobody wins the game!"
+  end
+end
+
+# LOOP PERSISTENT GAME STATE
+player = entity_init
+dealer = entity_init
+
 # GAME LOGIC
 loop do
   deck = deck_init
   deck_shuffle!(deck)
 
-  player = entity_init
-  dealer = entity_init
+  entity_reset!(player)
+  entity_reset!(dealer)
 
   deal_card_to_and_evaluate!(player, deck, 2)
   deal_card_to_and_evaluate!(dealer, deck, 2)
   show_gui(player, dealer)
-  end_game_message = nil
+  end_round_message = nil
 
   loop do
     player_turn(player, dealer, deck)
     if bust?(player)
-      end_game_message = "Player bust. Dealer wins!"
+      end_round_message = "Player bust. Dealer wins round!"
+      wins_point!(dealer)
       break
     end
 
     dealer_turn(player, dealer, deck)
     if bust?(dealer)
-      end_game_message = "Dealer bust. Player wins!"
+      end_round_message = "Dealer bust. Player wins round!"
+      wins_point!(player)
       break
     end
 
     if showdown?(player, dealer)
-      end_game_message = showdown_result(player, dealer)
+      end_round_message = showdown_result(player, dealer)
       break
     end
   end
 
   show_gui(player, dealer, true)
-  prompt(end_game_message)
+  prompt(end_round_message)
 
-  break unless play_again?
+  if game_over?(player, dealer)
+    prompt(game_result(player, dealer))
+    break
+  end
+
+  break unless play_next_round?
 end
 
 prompt("Thank you for playing Twenty-One!")

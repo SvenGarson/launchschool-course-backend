@@ -38,3 +38,7 @@
    for instance hash, keys can be any object, but in case an interface is built,
    should one create constants to access and set the data, or is it more idiomatic
    in ruby to just use the symbols, strings, etc?
+
+=== Lessons learned ===
+- Simplify, simplify, simplify, walk away, simplify some more!
+
