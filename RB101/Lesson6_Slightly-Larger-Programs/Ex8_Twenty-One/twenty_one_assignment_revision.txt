@@ -1,0 +1,40 @@
+=== TA feedback and suggestions ===
+
+=== GUI / Usage ===
+- provide abbreviated input options for hit and stay 'h' and 's'    (X)
+- more explicit validation for the prompt to play again             (X)
+-- new prompt:
+        - check for empty, zero input
+        - allow yes, no, y, n
+
+=== Rubocop ===
+- shorten dealer_turn method to respect 15 lines max length         (x)
+- show_cards method too complicated & too many cops disabled        (X)
+- move test code to another file                                    (X)
+- don't assign variables to use them only once                      (X)
+
+=== Methods ===
+- more natural naming, for example: sum_cards_non_ace -> sum_non_ace_cards    (X)
+- more methods are okay if it makes the code clearer                          (X)
+
+=== Constants ===   
+- Name them better, more explicit                                             (X)   
+- Unnecessary constants for things that don't change like 'stay' and 'hit'    (X)
+- move tests to another file                                                  (X)
+- KEY_TAG, KEY_VALUE too ambiguous and no intention not clear                 (X)
+
+=== My observations ===
+- Use symbols as player state instead of integers                             (X)
+
+=== Personal conclusion and questions ===
+1) The use of constants when creating hashes for as heir value and keys?
+2) Using symbols for state instead of strings and integers?
+3) The use of constants not just for options, but also but multiple
+   occurence of the same value?
+   So constans only for:
+      - things that don't change
+      - configuration options
+4) Robust style to set and retrieve simple and complex data structure data
+   for instance hash, keys can be any object, but in case an interface is built,
+   should one create constants to access and set the data, or is it more idiomatic
+   in ruby to just use the symbols, strings, etc?
