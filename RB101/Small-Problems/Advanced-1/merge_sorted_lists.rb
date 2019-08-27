@@ -48,9 +48,34 @@
           -> same for right
         - else
           -> same swapped
-        
 
+    after looking at the solution:
+
+      - merged = empty array
+      - start index right = 0
+      - for each current obj in the left array:
+        - from start index to end in right array:
+          - if R <= L:
+            -> merged << R
+            -> start_index = current index + 1
+        - merged << curr
+      - return merged
 =end
+
+def merge_2(arr_L, arr_R)
+  merged = []
+  index_search = 0
+  arr_L.each do |left|
+    index_search.upto(arr_R.size-1) do |i|
+      right = arr_R[i]
+      break if right > left
+      merged << right
+      index_search = i + 1
+    end
+  merged << left
+  end
+  merged + arr_R[index_search..-1]
+end
 
 def merge(arr_L, arr_R)
   merged = []
@@ -75,7 +100,14 @@ def merge(arr_L, arr_R)
   merged
 end
 
+puts '### First solution extracting information into sub-arrays ###'
 p merge([1, 5, 9], [2, 6, 8]) == [1, 2, 5, 6, 8, 9]
 p merge([1, 1, 3], [2, 2])    == [1, 1, 2, 2, 3]
 p merge([], [1, 4, 5])        == [1, 4, 5]
 p merge([1, 4, 5], [])        == [1, 4, 5]
+
+puts '### Second solution re-constructing the given solution ###'
+p merge_2([1, 5, 9], [2, 6, 8]) == [1, 2, 5, 6, 8, 9]
+p merge_2([1, 1, 3], [2, 2])    == [1, 1, 2, 2, 3]
+p merge_2([], [1, 4, 5])        == [1, 4, 5]
+p merge_2([1, 4, 5], [])        == [1, 4, 5]
