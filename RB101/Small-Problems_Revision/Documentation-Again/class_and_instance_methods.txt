@@ -1,0 +1,9 @@
+File::path refers to a class method and File#path refers to an 
+instance method.
+
+File::path returns the string representation of the parameter
+and File#path returns the pathname and does not normalize the name.
+Furthermore, it raises an IOError for a file created using
+File::Constants::TMPFILE because it does not have a path name.
+File::Constants::TMPFILE is used to create an unnamed temporary
+file, that does not have a path.
