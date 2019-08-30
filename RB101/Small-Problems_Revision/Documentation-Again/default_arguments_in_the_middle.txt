@@ -1,7 +1,0 @@
-This code will print:
-
-  [4, 5, 3, 6]
-
-There are 3 arguments, but ony 2 required parameters,
-so ruby tries to assign the required ones first, then if any are left
-the defaulted ones get assigned from left to right.
