@@ -1,0 +1,64 @@
+# Question 1 #
+1. 1
+2. 2
+3. 2
+4. 3
+
+Each object the references in the array point to are printed on
+their own line since the puts method does append a newline after
+each element printed if it does not already contain one at the end.
+
+The uniq method return a new array with object that are duplicates
+removed. But since the uniq method does not mutate the caller, and
+the puts method has the original local variable 'numbers' passed to
+it as argument, the every object is printed per line and the uniq
+method has no overall effect.
+
+# Question 2 #
+
+In ruby the ! is the unary bang/boolean negation operator if it is used
+before an object like !obj but there is also a method defined in the
+BasicObject class that has the same effect of returning the opposite
+boolean value of the operand/parameter of the object in question.
+
+The ? in ruby is not an operator or method by itself, but rather, is
+used at the end of a method name by convention if the method returns
+True or False exclusively.
+
+1. != is the not method, which return true if objects are 'the same'
+   and false otherwise
+2. ! before an object returns the negation of it's boolean value
+3. ! can only be after a method name, and is also a convention
+   which states that a method that has a ! at the end, has 'dangerous'
+   or possibly unexpected behaviour, it often means that the method in
+   question mutates the caller or passed parameter, also that there is,
+   usually, another accompanying method without the ! that has different,
+   less 'dangerous' or unexpected behaviour
+4. does not exist
+5. convention at the end of a method name if the method returns True or
+   False exclusively
+6. Twice the negation of the boolean evaluation of the object in question,
+   or simply the negation of the negation which in the end results in the
+   original boolean interpretation/evaluation of the object, but as the 
+   boolean True or False, whether tha object was a non-boolean expression
+   or a boolean
+
+# Question 3 #
+
+advice.gsub!('important', 'urgent')
+
+gsub! changes the string in place, i.e, mutates the caller for each occurence
+of the first parameter and replaces it with the second parameter
+
+# Question 4 #
+
+1. Array#delete_at(index) deletes the object from the array called on and
+   shifts the objecs after the index deleted to the left to fill the gap,
+   resulting in removing the reference at that index only.
+   So the first line will remove the Integer 2 from the array and shift the
+   rest forward, which mutates the array to now be [1, 3, 4, 5]
+
+2. Array#delete(obj) deletes all references/objects from the array that are
+   'equal' to obj in place.
+   So the second line will remove the Integer 1 from the array once which
+   mutates the array to now be [2, 3, 4, 5]
