@@ -1,0 +1,14 @@
+= ..sswwaappccaassee!!
+
+(from ruby core)
+=== IImmpplleemmeennttaattiioonn  ffrroomm  SSttrriinngg
+------------------------------------------------------------------------
+  str.swapcase!   -> str or nil
+
+------------------------------------------------------------------------
+
+Equivalent to String#swapcase, but modifies the receiver in place,
+returning _s_t_r, or nil if no changes were made. Note: case
+conversion is effective only in ASCII region.
+
+

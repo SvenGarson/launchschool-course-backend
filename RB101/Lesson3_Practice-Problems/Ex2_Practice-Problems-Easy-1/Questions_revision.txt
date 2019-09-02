@@ -62,3 +62,36 @@ of the first parameter and replaces it with the second parameter
    'equal' to obj in place.
    So the second line will remove the Integer 1 from the array once which
    mutates the array to now be [2, 3, 4, 5]
+
+# Question 4 #
+
+Use the Range#cover? like so to check if 42 in range [10, 100] (inclusive)
+
+(10..100).cover?(42)
+
+# Question 6 #
+
+famous_words = "seven years ago..."
+
+since the requirements do not state whether to modifiy the original string
+or create a new one, we can do both:
+
+1. famous_words.prepend('Four score and ')
+2. famous_words = 'Four score and ' + famous_words
+
+# Question 7 #
+
+number = 2
+how_deep = 'number'
+how_deep => 'add_eight(add_eight(add_eight(add_eight(add_eight(number)))))'
+result = (2+8+8+8+8+8) = 42
+
+The result willl be the Integer 42
+
+# Question 8 #
+
+flintstones.flatten
+
+# Question 9 #
+
+flintstones.to_a[2]

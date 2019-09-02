@@ -1,0 +1,56 @@
+# Question 1 #
+
+ages.has_key?('Spot)
+
+bonus:
+1. include?(key)
+2. member?()
+
+
+
+# Question 2 #
+
+munsters_description.swapcase!
+munsters_description.capitalize!
+munsters_description.downcase!
+munsters_description.upcase!
+
+# Question 3 #
+
+ages.merge!(additional_ages)
+
+# Question 4 #
+
+advice.include?('Dino')
+
+# Question 5 #
+
+flintstones = %w(Fred Barney Wilma Betty BamBam Pebbles)
+
+# Question 6 #
+
+flintstones << 'Dino'
+
+# Question 7 #
+
+flintstones.push('Dino', 'Hoppy')
+
+# Question 8 #
+
+the call: advice.slice!('Few things in life are as important as ')
+return the portion deleted from the string and leaves the rest as
+is in the string
+
+bonus:
+The slice mehod however, if called with a string argument returns the
+argument string if the string is present in the string the method
+is called on and nil if it does not.
+
+
+# Question 9 #
+
+statement.count('t')
+
+# Question 10 #
+
+title.center(40)
