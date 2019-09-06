@@ -25,6 +25,10 @@
     - return accum to replace
   - return that new array
 
+  further exploration:
+  
+  using inject
+
 =end
 
 def running_total(arr)
@@ -32,6 +36,10 @@ def running_total(arr)
   arr.map do |num|
     accum += num
   end
+end
+
+def running_total2(arr)
+  arr.inject(:+)
 end
 
 p running_total([2, 5, 13]) == [2, 7, 20]
