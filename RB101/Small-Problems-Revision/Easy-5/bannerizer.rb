@@ -53,6 +53,17 @@
     
 =end
 
+def str_lines(string, line_length)
+  lines = []
+  loop do
+    sub = string[0, line_length]
+    string = string[line_length..-1]
+    lines << sub unless sub.empty?
+    break if string == nil
+  end
+  lines
+end
+
 def print_in_box_lines(str)
   banner_width = str.length + 4
   if banner_width > TERMINAL_WIDTH
@@ -63,17 +74,14 @@ def print_in_box_lines(str)
   div_empty  = "|#{' ' * (banner_width - 2)}|"
   puts div_border
   puts div_empty
-  line_accum = ''
-  str.split.each do |word|
-    if line_accum.length + word.length <= text_width
-      prep = (line_accum.length.zero?) ? '' : ' '
-      line_accum << prep + word
-    else
-      padding = banner_width - line_accum.length
-      puts "| #{line_accum}#{' ' * padding} |"
-      line_accum.clear << word
+  
+  if str.length != 0
+    lines  = str_lines(str, text_width)
+    lines.each_with_index do |line, i|
+      puts "| #{line.strip.center(text_width)} |"
     end
-  end
+  end  
+
   puts div_empty
   puts div_border
 end
