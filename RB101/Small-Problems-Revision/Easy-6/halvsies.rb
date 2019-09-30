@@ -75,15 +75,8 @@ dsal:
 
 def halvsies(arr)
   res = []
-  n = arr.length
-  half = (n/2).floor
-  rng_1, rng_2 = nil
-  if n.even?
-    rng_1, rng_2 = (0...half), (half...n)
-  else
-    rng_1, rng_2 = (0..half), (half+1...n)
-  end
-  res << arr[rng_1] << arr[rng_2]
+  half = (arr.length/2.0).ceil
+  res << arr[0, half] << arr[half, arr.size - half]
 end
 
 p halvsies([1, 2, 3, 4]) == [[1, 2], [3, 4]]
