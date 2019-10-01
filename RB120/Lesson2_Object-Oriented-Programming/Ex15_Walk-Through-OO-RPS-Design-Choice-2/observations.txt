@@ -1,0 +1,37 @@
+What is the primary improvement of this new design?
+---------------------------------------------------
+
+The primary improvement is the fact that we handle
+the types of moves a custom object, moved a lot of
+logic out into the comparison methods for the Move
+objects and the code is more OO and much clearer
+than before.
+
+What is the primary drawback of this new design?
+------------------------------------------------
+
+My guess is that the primary drawback of this design
+is that we now have more classes, more methods and
+more implicit functionality that, although we removed
+quite a bit of clutter, i.e the nested case/if
+statements to compare the Human and Computer moves,
+but in the end we had to add about the same amount of
+logic, less cryptic, but still a lot.
+
+Personal observations
+---------------------
+
+There are certainly many ways to improve this code.
+But things that come to my mind are:
+
+  - We are still dealing with strings, we could use symbols,
+    or other kinds of objects
+  - We type the move literals at many places, making it prone
+    to typing errors and hard to add functionality, despite
+    the now OO nature of the code
+  - We initialize lists of possible choices more than once,
+    and use these local lists to validate user input and to
+    enable a random computer choice.
+    As an immediate measure, we could always use the constant
+    VALUES string array to check aganst valid choice as to
+    the DRY principle.

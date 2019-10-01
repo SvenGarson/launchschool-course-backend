@@ -1,0 +1,38 @@
+Before we had to check the type of player a player object is
+in order decide whether to ask the player or automatically
+initialize the state of the class based on the instance variable
+type.
+
+This meant that in order to make a choice and initialize the name
+we always needed to check whether the object is human or the
+computer. Despite us implementing a human? method to abstract
+for checking whether a Player instance is human or computer,
+this is still the same thing as without helper method, just
+easier to use and cleaner to write.
+
+In OO programming we can use inheritance and mixin modules to
+design powerful abstractions and we can usually model these
+exact types of objects by abstracting and moving common
+state and functionality up the inheritance chain.
+
+This is why we wrote the Humand and Computer classes, in order to
+just be able to call the corresponding method method on a 
+specific object without needing to check for human or computer.
+
+The common state in the superclass Player also makes sense, since
+none of both the Human or Computer need to add state to the basic
+functionality, which is why we could push, in this case keep as
+is really, the state in the superclass.
+
+This is an example of polymorphism, where different objects,
+inhereting from the same class have different implementations of
+a common method/functionality.
+
+The improvement lies in the fact that we now know that each 
+object implements it's specific behaviour and that we can still
+access the same information the same general way, for both types
+of Player. I.e, the design is more OO.
+
+A drawback could be, that we now made the hierarchy slightly more
+complex and that depending on what we need to add, the change in
+architecture may have rippling consequences, good and bad.
