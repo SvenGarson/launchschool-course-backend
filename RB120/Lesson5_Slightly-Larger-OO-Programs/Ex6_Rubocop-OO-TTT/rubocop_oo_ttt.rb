@@ -4,7 +4,7 @@ class Board
     [1, 4, 7], [2, 5, 8], [3, 6, 9], # cols
     [1, 5, 9], [3, 5, 7],            # diagonals
   ]
-  
+
   def initialize
     @squares = {}
     reset
@@ -31,16 +31,16 @@ class Board
   end
 
   def winning_marker
-
     WINNING_LINES.each do |line|
       marked = winning_markers_for(line)
-      if marked.size == 3 && marked.uniq.size == 1 
+      if marked.size == 3 && marked.uniq.size == 1
         return marked.first
       end
     end
     nil
-  end 
+  end
 
+  # rubocop:disable Metrics/AbcSize
   def draw
     puts "   |   |   "
     puts " #{get_square_at(1)} | #{get_square_at(2)} | #{get_square_at(3)} "
@@ -54,13 +54,14 @@ class Board
     puts " #{get_square_at(7)} | #{get_square_at(8)} | #{get_square_at(9)} "
     puts "   |   |   "
   end
+  # rubocop:enable Metrics/AbcSize
 
   private
-  
+
   def winning_markers_for(line)
     line.each_with_object([]) do |cell_number, accum|
       square = get_square_at(cell_number)
-      accum <<  square.marker if square.marked?
+      accum << square.marker if square.marked?
     end
   end
 
@@ -71,7 +72,7 @@ end
 
 class Square
   INITIAL_MARKER = ' '
-  
+
   attr_accessor :marker
 
   def initialize
@@ -105,7 +106,6 @@ class Player
 end
 
 class PlayerHuman < Player
-
   def initialize
     super(HUMAN_MARKER)
   end
@@ -118,13 +118,12 @@ class PlayerHuman < Player
       break if board.unmarked_keys.include?(square)
       puts "Sorry, that's not a valid choice."
     end
-    
+
     board[square] = marker
   end
 end
 
 class PlayerComputer < Player
-
   def initialize
     super(COMPUTER_MARKER)
   end
@@ -135,8 +134,6 @@ class PlayerComputer < Player
 end
 
 class TTTGame
-  public
-
   def play
     display_welcome_message
 
@@ -144,14 +141,12 @@ class TTTGame
       display_board
 
       loop do
-
         current_player_moves
         break if board.someone_won? || board.full?
         clear_screen_and_display_board if human_turn?
-    
       end
       display_result
-      
+
       break unless play_again?
       reset
       display_play_again_message
@@ -177,7 +172,7 @@ class TTTGame
   end
 
   def display_goodbye_message
-    puts "\nThanks for playing Tic Tac Toe!"  
+    puts "\nThanks for playing Tic Tac Toe!"
   end
 
   def clear
@@ -209,7 +204,7 @@ class TTTGame
       break if %w(y n).include?(answer)
       puts "Sorry, must be y or n"
     end
-    (answer == 'y') ? true : false
+    answer == 'y' ? true : false
   end
 
   def reset
@@ -230,7 +225,7 @@ class TTTGame
 
   def first_to_move
     self.current_player = human
-  end  
+  end
 
   def human_turn?
     current_player == human
