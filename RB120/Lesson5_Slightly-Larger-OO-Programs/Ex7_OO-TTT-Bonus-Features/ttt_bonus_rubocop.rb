@@ -36,7 +36,7 @@ class TTTGame
         display_round_result
 
         break if game_over?
-        finalize_round
+        finalize_round(next_round?)
       end
       display_game_winner
       break unless play_again?
@@ -89,9 +89,9 @@ class TTTGame
     round_winner? || board.full?
   end
 
-  def finalize_round
-    board.clear if next_round?
-    alternate_player
+  def finalize_round(next_round)
+    board.clear if next_round
+    alternate_player(next_round)
   end
 
   def display_round_result
@@ -146,10 +146,10 @@ another round to #{WINNING_SCORE} points? (y/n)",
     p_current.choose_cell(board)
   end
 
-  def alternate_player
+  def alternate_player(next_round)
     # next player the one initially defined by
     # the constant or the one chosen by the user
-    if next_round?
+    if next_round
       self.p_current = p_last_chosen
     else
       self.p_current = case p_current
