@@ -253,8 +253,7 @@ class Game21
     
     puts winner_msg
 
-    print "\n(Press enter to stop the game)"
-    Utils.wait_for_any_input
+    sleep 3
   end
 
   def determine_winner
@@ -278,16 +277,20 @@ class Game21
   def show_cards(reveal_dealer: false)
     Utils.clear
 
+    # determine which score to show
+    player_value_str = player.hand_value.to_s.ljust(2)
+    dealer_value_str = reveal_dealer ? dealer.hand_value.to_s : "##"
+
     # first of the dealer cards
-    puts "\n+--------------+"
-    puts "| Dealer cards | #{dealer.hand_value}"
-    puts "+--------------+"
+    puts "\n+-----------------+"
+    puts "| Dealer cards #{dealer_value_str} | "
+    puts "+-----------------+"
     dealer.print_cards(show_all: reveal_dealer)
 
     # all the player cards
-    puts "\n+--------------+"
-    puts "| Player cards | #{player.hand_value}"
-    puts "+--------------+"
+    puts "\n+-----------------+"
+    puts "| Player cards #{player_value_str} |"
+    puts "+-----------------+"
     player.print_cards
   end
 
@@ -318,7 +321,7 @@ class Game21
       if rindex == 2
         print ' --> Card type (Ace, Jack, Ten(10), Two(2), ...)'
       elsif rindex == 5
-        print ' --> Card suit (Diamonds, Hearts, Spades, ...)'
+        print ' --> Card suit (Diamonds, Hearts, Spades, Clubs)'
       end
       print "\n"
     end

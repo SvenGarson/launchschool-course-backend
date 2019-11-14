@@ -4,7 +4,7 @@ class TTTInput
   def self.prompt_non_empty_string(prompt_msg, invalid_msg = '')
     loop do
       print prompt_msg
-      inp = gets.chomp
+      inp = gets.chomp.strip
       break(inp) unless inp.empty?
       print invalid_msg
     end

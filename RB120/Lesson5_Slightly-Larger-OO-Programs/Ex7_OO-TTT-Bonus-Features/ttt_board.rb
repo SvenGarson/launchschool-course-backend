@@ -1,5 +1,4 @@
 class TTTBoard
-  private
 
   WINNING_LINES = [
     [1, 2, 3], [4, 5, 6], [7, 8, 9], # rows
@@ -7,9 +6,13 @@ class TTTBoard
     [1, 5, 9], [3, 5, 7],            # diagonals
   ]
 
-  attr_accessor :cells
+  private
+    
+  attr_writer :cells
 
   public
+
+  attr_reader :cells
 
   def initialize
     clear
