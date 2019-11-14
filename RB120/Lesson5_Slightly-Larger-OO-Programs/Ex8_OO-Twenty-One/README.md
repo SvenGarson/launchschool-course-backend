@@ -9,11 +9,42 @@
 * Ascii-art cards
 * Fully validated input
 
-#### **Things to improve on**
+#### **Things to improve on and features to implement**
+
+The thing that bugs me the most about my implementation is the
+way I generate what the ascii art shows as card type.
+
+Since the card types Are the numbers 2-10 and the face card types
+J-A, I just take the the first 1 or 2 characters from that type,
+and expand the string to a string 2 wide whenever the type is not
+a 2 digit number. The problem comes in when I need to check whether
+a card is a face card, so that I can only consider the first
+character as type, that is shown on the top left of the card.
+
+I create a local array of card suits and detect whether a card is
+a face card by checking the card type. This is not good because we
+check the string values from different sets of data. It is not a
+big problem since we only have 4 of those values, but I would like
+to just be able to check whether a card is a face card or not.
+ ____        ____ 
+|#   |      |A   |  -> card type
+|    | ==>  |    | 
+|    |      |    | 
+|___#|      |___#|  -> card suit
+
+
+I know how I can fix this in an OO manner. I could just add a
+boolean as card attribute which that tells me whether said
+card is a face card or not. I could easily add it to the cards
+array when I combine cards and suits into the final deck, but I
+am going ot leave it at that for now, I want to be able to track
+my progress and if I want to refactor and change my approach,
+I am just going to create everything from scratch in a separate
+project.
 
 * Add replay feature
 * 'Rendering' into a buffer and drawing that when necessary
-* Better deck shuffling and proper usage
+* Better deck shuffling and proper randomization
 * Money betting
 
 #### **Design choices and approach**
@@ -37,11 +68,11 @@ at my level of experience, impossible.
 
 There is always unexpected stuff, requirements, or problems
 are just really hard to solve in a way that rubocop does
-not complain about liine length, method length etc.
+not complain about line length, method length etc.
 
 Although annoying, this got me into thinking about my designs
 more, and I actually learned that some of these sentences
-experiences programmers throw around are actually true, in onoe
+experiences programmers throw around are actually true, in one
 form or another.
 
 I aimed for a very clean game loop, that looked something like
@@ -65,10 +96,9 @@ def play
 end
 ```
 
-I though I could, rather easily but with time, implement method
-that looks as clean as the above example, but I did not understant
-the trade-offs I hade to make, not consciously anyway and not at my
-level of profiency.
+I thought I could implement it, rather easily but with time, implement method that looks as clean as the above example, but I did not
+understant the trade-offs I had to make, not consciously anyway and
+not at my level of proficiency.
 
 The more classes I add, the more interconnections there are.
 The the more interconnections, the more 'in-between object
@@ -77,7 +107,7 @@ The more objects we pass around, the more can go wrong, or the more
 we have to potentially fix.
 
 I played with the Participant class to handle the looping until the
-player is bust of chose 'stay' in order to oofload that logic into
+player is bust or chooses 'stay' in order to ofload that logic into
 one clean method call. Although this implementation was pretty easy,
 it showed me that offloading logic to somewhere else, especially to
 another, more specific object, forces me to implement a way to
@@ -90,7 +120,7 @@ This, is a hard game to play.
 
 #### **OO design**
 
-#### **Method access levels: public, private, protected**
+##### **Method access levels: public, private, protected**
 
 It seems that there are quite a few ways to define the access levels
 of methods, but in general, and as I was told, it seems to be easier
@@ -103,9 +133,10 @@ The less places we need to look for what is what, the better.
 I like the idea and look of just defining methods when/where they
 make sense without worrying about what it's eventual acces rights
 are, and the in the end, when the interface and implementation is
-clear, use the 'acces right' methods in one obvious place in the
-class definition. The following exmample demonstrates what seems
+clear, use the 'acces right methods' in one obvious place in the
+class definition. The following example demonstrates what seems
 most logical to me:
+
 
 ```ruby
 class SomeClass
@@ -117,6 +148,7 @@ class SomeClass
   def c; end
 end
 ```
+
 
 But in this assignment I just took the 'private/protected method at
 the bottom, the rest up top' approach. It works, it's just that I
@@ -130,7 +162,7 @@ objects, keeps track of the winner and at what point
 in the game the dealer is to be revealed.
 
 Most of the output is generated and output here and any
-data needed is receied from the objects themselves.
+data needed is received from the objects themselves.
 
 ##### **Participant class**
 
@@ -146,8 +178,8 @@ This class gets the player and dealer choice through the
 Player class handle differently, but the return value is
 always a valid object representing either `hit` or `stay`.
 
-In additiona, this class is also responsible to draw the
-players' cards in ascii art horizontally and houses the
+In addition, this class is also responsible to draw the
+players cards in ascii art horizontally and houses the
 logic to compare the players against each other's hand
 values.
 

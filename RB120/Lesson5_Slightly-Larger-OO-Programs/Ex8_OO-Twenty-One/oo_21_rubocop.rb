@@ -31,6 +31,8 @@ class Card
   attr_writer :suit, :type, :value
 
   def design_card_type_abbrev
+    # if the string is a number from 2-10
+    # take the 2 and expand
     case FACE_CARD_NAMES.include?(type)
     when true
       expand_str(type.chr, 2)
@@ -67,7 +69,9 @@ class Deck
   end
 
   def shuffle
-    7.times { |_| cards.shuffle! }
+    # shuffle between 4 and 29 times inclusively
+    # there is no inherent logic to this range
+    rand(4..29).times { |_| cards.shuffle! }
     self
   end
 
@@ -223,10 +227,8 @@ end
 
 class Player < Participant
   def choose_stay_or_hit
-    # prompt for choice
     valid_choice_str = prompt_choice_hit_or_stay
 
-    # return choice as option
     valid_choice_str.start_with?('h') ? CHOICE_HIT : CHOICE_STAY
   end
 
@@ -245,15 +247,15 @@ end
 
 class Game21
   RULES_TEXT = \
-    "Rules" \
-    "\n-----" \
+    "  Rules" \
+    "\n  -----" \
     "\n\n21 is about getting to a hand value as close to 21 as possible." \
     "\nYou play against the dealer. Each player can either hit/draw a" \
     "\ncard or stay, at which point the turn is over." \
     "\nThe player who's hand is worth > 21 is bust, and looses the game!" \
     "\nIn case nobody is bust, the player with the highest hand value wins." \
-    "\n\nHand values" \
-    "\n-------------" \
+    "\n\n  Hand values" \
+    "\n  -------------" \
     "\n\nCards 2 through 10 are worth their face value in points." \
     "\nCards King(K), Queen(Q) and Jack(J) are worth 10 points." \
     "\nAces are worth either 1 or 11, whichever brings you closest to 21.\n\n"
@@ -305,9 +307,9 @@ class Game21
          "\n+-------------------+"
     dealer.print_cards(show_all: reveal_dealer)
 
-    puts "\n+-------------------+" \
-         "\n| Player cards (#{player_value_str}) |" \
-         "\n+-------------------+"
+    puts "\n+-----------------+" \
+         "\n| Your cards (#{player_value_str}) |" \
+         "\n+-----------------+"
     player.print_cards
   end
 
@@ -332,7 +334,7 @@ class Game21
     example_ascii_lines.each_with_index do |card_line, index|
       rindex = index + 1
 
-      print card_line
+      print "  #{card_line}"
       if rindex == 2
         print ' --> Card type (Ace, Jack, Ten(10), Two(2), ...)'
       elsif rindex == 5
@@ -347,7 +349,7 @@ class Game21
 
   def display_winner
     winner_msg = if winner == player
-                   "\nPlayer wins the game!"
+                   "\nYou win the game!"
                  elsif winner == dealer
                    "\nDealer wins the game!"
                  else
