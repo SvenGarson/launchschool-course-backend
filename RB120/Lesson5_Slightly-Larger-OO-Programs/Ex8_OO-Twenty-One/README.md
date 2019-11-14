@@ -1,6 +1,6 @@
-#### README - Object oriented 21 with bonus features
+### README - Object oriented 21 with bonus features
 
-##### **Features**
+#### **Features**
 
 * One single game of 21
 * Explanation of rules and ascii cards
@@ -9,14 +9,14 @@
 * Ascii-art cards
 * Fully validated input
 
-##### **Things to improve on**
+#### **Things to improve on**
 
 * Add replay feature
 * 'Rendering' into a buffer and drawing that when necessary
 * Better deck shuffling and proper usage
 * Money betting
 
-##### **Design choices and approach**
+#### **Design choices and approach**
 
 Since my last project was pretty much designed on paper and
 then implemented and that still gave me many issues down the
@@ -88,9 +88,9 @@ design.
 
 This, is a hard game to play.
 
-##### **OO design**
+#### **OO design**
 
-##### **Method access levels: public, private, protected**
+#### **Method access levels: public, private, protected**
 
 It seems that there are quite a few ways to define the access levels
 of methods, but in general, and as I was told, it seems to be easier
@@ -123,7 +123,7 @@ the bottom, the rest up top' approach. It works, it's just that I
 think it's really hard to read, one has to look at a few places to
 find out what is what and I think it may be easier to break.
 
-###### **Game21 class**
+##### **Game21 class**
 
 This class is the orchestrates the player and dealer
 objects, keeps track of the winner and at what point
@@ -132,7 +132,7 @@ in the game the dealer is to be revealed.
 Most of the output is generated and output here and any
 data needed is receied from the objects themselves.
 
-###### **Participant class**
+##### **Participant class**
 
 This superclass, from which both Player and Dealer
 inherit from, keeps track of each players' cards,
@@ -151,7 +151,7 @@ players' cards in ascii art horizontally and houses the
 logic to compare the players against each other's hand
 values.
 
-###### **Dealer and Player classes (inherit from Participant)**
+##### **Dealer and Player classes (inherit from Participant)**
 
 The Dealer class is the one that keeps track of the
 deck and the only class that can deal cards, which is
@@ -165,7 +165,7 @@ calls the next higher up method version through super with
 itself as the dealer object, which removed the need for us
 to explicitly pass it.
 
-###### **Card and Deck classes**
+##### **Card and Deck classes**
 
 The card class keeps track of the card attributes such as
 type (Ace, King, Queen, Jack, 10, etc.), it's face value
