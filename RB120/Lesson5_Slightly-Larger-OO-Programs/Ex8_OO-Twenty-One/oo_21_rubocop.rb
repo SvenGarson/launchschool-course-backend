@@ -1,11 +1,6 @@
-class GameConst
-  WINNING_HAND_VALUE = 21
-  DEALER_MIN_HAND_VALUE = 17
-end
-
 class Card
-  
-  attr_accessor :suit, :type, :value
+  FACE_CARD_NAMES = %w(Ace King Queen Jack)
+  attr_reader :suit, :type, :value
 
   def initialize(suit, type, value)
     self.suit = suit
@@ -14,19 +9,9 @@ class Card
   end
 
   def ascii_art_lines(show_face: true)
-
-    # determine what string to use for card type
-    face_card_names = %w(Ace King Queen Jack)
-    show_type_str = case face_card_names.include?(type)
-                  when true
-                    expand_str(type.chr, 2)
-                  else
-                    expand_str(value.to_s, 2)
-                  end
-
     ascii_strarr = [
       ' _____ ',
-      "|#   |".sub('#', show_type_str),
+      "|#   |".sub('#', design_card_type_abbrev),
       '|     |',
       '|     |',
       '|____#|'.sub('#', suit.chr)
@@ -41,8 +26,17 @@ class Card
     ascii_strarr
   end
 
-  def to_s
-    "#{type} of #{suit}"
+  private
+
+  attr_writer :suit, :type, :value
+
+  def design_card_type_abbrev
+    case FACE_CARD_NAMES.include?(type)
+    when true
+      expand_str(type.chr, 2)
+    else
+      expand_str(value.to_s, 2)
+    end
   end
 
   def expand_str(str, desired_length)
@@ -55,14 +49,12 @@ class Card
 end
 
 class Deck
-  SUITS = %w(Diamonds Clubs Spades Hearts)
+  SUITS = %w(Diamonds Clubs Spades Hearts).freeze
   CARDS = [
     %w(Ace 1), %w(Two 2), %w(Three 3), %w(Four 4), %w(Five 5),
     %w(Six 6), %w(Seven 7), %w(Eight 8), %w(Nine 9), %w(Ten 10),
     %w(Jack 10), %w(Queen 10), %w(King 10)
   ].freeze
-  
-  attr_accessor :cards
 
   def initialize
     # build deck from cards and suits
@@ -75,22 +67,28 @@ class Deck
   end
 
   def shuffle
-    3.times { |_| cards.shuffle! }
+    7.times { |_| cards.shuffle! }
     self
   end
 
   def pop_card
     cards.pop
   end
+
+  private
+
+  attr_accessor :cards
 end
 
 class Participant
   include Comparable
 
+  DEALER_MIN_HAND_VALUE = 17
+  WINNING_HAND_VALUE = 21
   CHOICE_STAY = :stay
   CHOICE_HIT = :hit
 
-  attr_accessor :cards, :busted, :hand_value
+  attr_reader :hand_value
 
   def initialize
     self.cards = Array.new
@@ -107,38 +105,16 @@ class Participant
 
       if choice == CHOICE_HIT
         dealer.deal(self)
-        self.busted = true if hand_value > GameConst::WINNING_HAND_VALUE
+        self.busted = true if hand_value > WINNING_HAND_VALUE
       end
 
-      game.show_cards
+      game.show_cards(reveal_dealer: game.reveal_dealer?)
 
       # participant is done when bust
       break if bust?
     end
   end
 
-  # to be overriden by dealer and player
-  def choose_stay_or_hit; end
-
-  def compute_hand_value
-    ace_count = cards.select { |card| card.type == 'Ace' }.size
-    non_aces = cards.reject { |card| card.type == 'Ace' }
-    base_score = non_aces.reduce(0) { |accum, card| accum + card.value }
-    ace_rest = GameConst::WINNING_HAND_VALUE - base_score
-    final_score = base_score
-    ace_count.downto(0) do |full_aces|
-      test_score = (full_aces * 11) + (ace_count - full_aces)
-      final_score = base_score + test_score
-      break if final_score <= GameConst::WINNING_HAND_VALUE
-    end
-    self.hand_value = final_score
-  end
-
-  def take_card(card)
-    cards << card
-    compute_hand_value
-  end
-  
   def bust?
     busted
   end
@@ -149,7 +125,7 @@ class Participant
 
   def print_cards(show_all: true, padding: 2)
     return if cards.empty?
-    
+
     show_card_faces = :true
     cards_ascii_lines = cards.map do |card|
       lines = card.ascii_art_lines(show_face: show_card_faces)
@@ -159,19 +135,51 @@ class Participant
 
     # to print cards horizontally we need to print cards row by row
     rows_to_print = cards_ascii_lines.first.length
-      rows_to_print.times do |row_index|
-        cards_ascii_lines.each do |ascii_line|
-        print "#{ascii_line[row_index]}" + (' ' * padding)
+    rows_to_print.times do |row_index|
+      cards_ascii_lines.each do |ascii_line|
+        print ascii_line[row_index] + (' ' * padding)
       end
       print "\n"
     end
   end
+
+  protected
+
+  def take_card(card)
+    cards << card
+    compute_hand_value
+  end
+
+  private
+
+  attr_writer :hand_value
+  attr_accessor :cards, :busted
+
+  def number_of_aces
+    cards.select { |card| card.type == 'Ace' }.size
+  end
+
+  def hand_value_without_aces
+    non_ace_cards = cards.reject { |card| card.type == 'Ace' }
+    non_ace_cards.reduce(0) { |accum, card| accum + card.value }
+  end
+
+  def compute_hand_value
+    aces = number_of_aces
+    base_hand_value = hand_value_without_aces
+    final_hand_value = base_hand_value
+
+    aces.downto(0) do |max_score_aces|
+      min_score_aces = aces - max_score_aces
+      aces_value = (max_score_aces * 11) + min_score_aces
+      final_hand_value = base_hand_value + aces_value
+      break if final_hand_value <= WINNING_HAND_VALUE
+    end
+    self.hand_value = final_hand_value
+  end
 end
 
 class Dealer < Participant
-  
-  attr_accessor :deck
-  
   def initialize
     super()
     self.deck = Deck.new
@@ -182,53 +190,92 @@ class Dealer < Participant
     super
   end
 
+  def deal(receiver, card_count=1)
+    card_count.times { |_| receiver.take_card(deck.pop_card) }
+  end
+
+  protected
+
   def choose_stay_or_hit
-    Utils.prompt_dotted_wait("\nDealer is thinking ", 3)
+    prompt_dotted_wait("\nDealer is thinking ", 3)
 
     # hit until hand value at least 17
-    if hand_value < GameConst::DEALER_MIN_HAND_VALUE
+    if hand_value < DEALER_MIN_HAND_VALUE
       CHOICE_HIT
     else
       CHOICE_STAY
     end
   end
 
-  def deal(receiver, card_count=1)
-    card_count.times { |_| receiver.take_card(deck.pop_card) }
+  private
+
+  def prompt_dotted_wait(prompt_msg, wait_time_sec)
+    print prompt_msg
+    frac_wait_time = wait_time_sec.fdiv(3.0)
+    3.times do |_|
+      print '.'
+      sleep frac_wait_time
+    end
   end
+
+  attr_accessor :deck
 end
 
 class Player < Participant
-
   def choose_stay_or_hit
     # prompt for choice
-    valid_choice_str = Utils.prompt_choice_hit_or_stay
-    
+    valid_choice_str = prompt_choice_hit_or_stay
+
     # return choice as option
     valid_choice_str.start_with?('h') ? CHOICE_HIT : CHOICE_STAY
+  end
+
+  private
+
+  def prompt_choice_hit_or_stay
+    loop do
+      print "\nHit or stay? "
+      choice = gets.chomp
+      choice.downcase!
+      break(choice) if %w(hit stay h s).include?(choice)
+      print "\nChoose either hit(h) or stay(s)."
+    end
   end
 end
 
 class Game21
-
-  attr_accessor :player, :dealer, :game_over, :winner
+  RULES_TEXT = \
+    "Rules" \
+    "\n-----" \
+    "\n\n21 is about getting to a hand value as close to 21 as possible." \
+    "\nYou play against the dealer. Each player can either hit/draw a" \
+    "\ncard or stay, at which point the turn is over." \
+    "\nThe player who's hand is worth > 21 is bust, and looses the game!" \
+    "\nIn case nobody is bust, the player with the highest hand value wins." \
+    "\n\nHand values" \
+    "\n-------------" \
+    "\n\nCards 2 through 10 are worth their face value in points." \
+    "\nCards King(K), Queen(Q) and Jack(J) are worth 10 points." \
+    "\nAces are worth either 1 or 11, whichever brings you closest to 21.\n\n"
 
   def initialize
     self.player = Player.new
     self.dealer = Dealer.new
     self.game_over = false
     self.winner = nil
+    self.reveal_dealer = false
   end
 
   def start
-
     display_welcome
     display_rules
-    
+
     deal_initial_cards
     show_cards
-   
+
     player.choose_until_stay_or_bust(self, dealer)
+
+    reveal_the_dealer
 
     unless player.bust?
       dealer.choose_until_stay_or_bust(self)
@@ -238,8 +285,64 @@ class Game21
 
     determine_winner
     display_winner
-    
+
     display_goodbye
+  end
+
+  def reveal_dealer?
+    reveal_dealer
+  end
+
+  def show_cards(reveal_dealer: false)
+    clear
+
+    # determine which score to show
+    player_value_str = player.hand_value.to_s.ljust(2)
+    dealer_value_str = reveal_dealer ? dealer.hand_value.to_s : "##"
+
+    puts "\n+-------------------+" \
+         "\n| Dealer cards (#{dealer_value_str}) | " \
+         "\n+-------------------+"
+    dealer.print_cards(show_all: reveal_dealer)
+
+    puts "\n+-------------------+" \
+         "\n| Player cards (#{player_value_str}) |" \
+         "\n+-------------------+"
+    player.print_cards
+  end
+
+  private
+
+  attr_accessor :player, :dealer, :game_over, :winner, :reveal_dealer
+
+  def display_welcome
+    clear
+    puts "\nWelcome to 21!"
+
+    print "\n(Press enter to continue)"
+    wait_for_any_input
+  end
+
+  def display_rules
+    clear
+
+    print RULES_TEXT
+
+    example_ascii_lines = Deck.new.shuffle.pop_card.ascii_art_lines
+    example_ascii_lines.each_with_index do |card_line, index|
+      rindex = index + 1
+
+      print card_line
+      if rindex == 2
+        print ' --> Card type (Ace, Jack, Ten(10), Two(2), ...)'
+      elsif rindex == 5
+        print ' --> Card suit (Diamonds, Hearts, Spades, Clubs)'
+      end
+      print "\n"
+    end
+
+    print "\n\n(Press enter to continue)"
+    wait_for_any_input
   end
 
   def display_winner
@@ -250,10 +353,13 @@ class Game21
                  else
                    "\nIt's a tie!"
                  end
-    
-    puts winner_msg
 
-    sleep 3
+    puts winner_msg
+    sleep 2
+  end
+
+  def display_goodbye
+    puts "\nWe hope you enjoyed our take on 21 !\n\n"
   end
 
   def determine_winner
@@ -274,99 +380,18 @@ class Game21
     dealer.deal(dealer, 2)
   end
 
-  def show_cards(reveal_dealer: false)
-    Utils.clear
-
-    # determine which score to show
-    player_value_str = player.hand_value.to_s.ljust(2)
-    dealer_value_str = reveal_dealer ? dealer.hand_value.to_s : "##"
-
-    # first of the dealer cards
-    puts "\n+-----------------+"
-    puts "| Dealer cards #{dealer_value_str} | "
-    puts "+-----------------+"
-    dealer.print_cards(show_all: reveal_dealer)
-
-    # all the player cards
-    puts "\n+-----------------+"
-    puts "| Player cards #{player_value_str} |"
-    puts "+-----------------+"
-    player.print_cards
+  def reveal_the_dealer
+    self.reveal_dealer = true
   end
 
-  def display_goodbye
-    puts "\nWe hope you enjoyed our take on 21 !\n\n"
-  end
-
-  def display_rules
-    Utils.clear
-    puts "Rules"
-    puts "-----"
-    puts "21 is about getting to a hand value as close to 21 as possible."
-    puts "You play against the dealer. Each player can either hit/draw a"
-    puts "card or stay, at which point the turn is over."
-    puts "The player who's hand is worth > 21 is bust, and looses the game!"
-    puts "\nIn case nobody is bust, the player with the highest hand value wins."
-    puts "\nHand values"
-    puts "-------------"
-    puts "\nCards 2 through 10 are worth their face value in points."
-    puts "Cards King(K), Queen(Q) and Jack(J) are worth 10 points."
-    puts "Aces are worth either 1 or 11, whichever brings you closest to 21.\n"
-
-    example_ascii_lines = Deck.new.shuffle.pop_card.ascii_art_lines
-    example_ascii_lines.each_with_index do |card_line, index|
-      rindex = index + 1
-
-      print card_line
-      if rindex == 2
-        print ' --> Card type (Ace, Jack, Ten(10), Two(2), ...)'
-      elsif rindex == 5
-        print ' --> Card suit (Diamonds, Hearts, Spades, Clubs)'
-      end
-      print "\n"
-    end
-    
-    print "\n\n(Press enter to continue)"
-    Utils.wait_for_any_input
-  end
-
-  def display_welcome
-    Utils.clear
-    puts "\nWelcome to 21!"
-
-    print "\n(Press enter to continue)"
-    Utils.wait_for_any_input
-  end
-end
-
-class Utils
-  def self.clear
+  def clear
     system('clear') || system('cls')
   end
 
-  def self.wait_for_any_input
+  def wait_for_any_input
     loop do
-      input = gets.chomp
+      gets.chomp
       break
-    end
-  end
-
-  def self.prompt_dotted_wait(prompt_msg, wait_time_sec)
-    print prompt_msg
-    frac_wait_time = wait_time_sec.fdiv(3.0)
-    3.times do |_|
-      print '.'
-      sleep frac_wait_time
-    end
-  end
-
-  def self.prompt_choice_hit_or_stay
-    loop do
-      print "\nHit or stay? "
-      choice = gets.chomp
-      choice.downcase!
-      break(choice) if %w(hit stay h s).include?(choice)
-      print "\nChoose either hit(h) or stay(s)."
     end
   end
 end
