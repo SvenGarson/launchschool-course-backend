@@ -26,7 +26,7 @@ a face card by checking the card type. This is not good because we
 check the string values from different sets of data. It is not a
 big problem since we only have 4 of those values, but I would like
 to just be able to check whether a card is a face card or not.
- _ _ _ _         _ _ _ _  
+
 | #      | ==>  | A      |  -> card type
 
 I know how I can fix this in an OO manner. I could just add a
