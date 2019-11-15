@@ -30,7 +30,7 @@ to just be able to check whether a card is a face card or not.
 |#   |      |A   |  -> card type
 |    | ==>  |    | 
 |    |      |    | 
-|___#|      |___#|  -> card suit
+|___ |      |___ |
 
 
 I know how I can fix this in an OO manner. I could just add a
