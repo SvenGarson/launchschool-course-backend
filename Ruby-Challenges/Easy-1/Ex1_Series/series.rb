@@ -6,11 +6,11 @@ class Series
 
   def slices(cons)
     raise ArgumentError if cons > @series.length
-    slices = Array.new
-    @series.each_cons(cons) do |cons_numbers|
-      slices << cons_numbers
-    end
-    slices
+    series.each_cons(cons).to_a
   end
+
+  private 
+
+  attr_reader :series
 
 end
