@@ -1,5 +1,4 @@
 class Anagram
-
   def initialize(reference_anagram)
     self.reference_anagram = reference_anagram
   end
@@ -13,7 +12,7 @@ class Anagram
       not_identical = (potential_lowcase != reference_lowcase)
       is_anagram = identical_characters?(potential_lowcase, reference_lowcase)
 
-      not_identical &&
+      not_identical && is_anagram
     end
   end
 
@@ -24,5 +23,4 @@ class Anagram
   end
 
   attr_accessor :reference_anagram
-
 end
