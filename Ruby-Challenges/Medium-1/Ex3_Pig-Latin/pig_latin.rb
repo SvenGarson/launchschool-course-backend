@@ -1,35 +1,36 @@
-=begin
-
-vowels: IUEOA
-conson: a-z - vowels
-
-rules:
-  - consonnant cluster moved ot end of string and add ay
-  - vowel - just add ay to end of word and if consonant before
-    add vowel to end before ay
-
-  apple -> appleay
-  ear -> earay
-  pig -> igpay
-  koala -> oalakay
-  square -> aresquay
-  therapy -> rapytheay
-
-=end
-
 class PigLatin
 
-  VOWELS = %w(i u e o a)
-  CONSONANTS = ('a'..'z').to_a - VOWELS
+  VOWELS_W_EXCEPTIONS_PATTERN = /\A(yt|xr|[iueoa])+/i
+  CONSONANTS_W_EXCEPTIONS_PATTERN = /\A(qu|[^iueoa])+/i
 
   def self.translate(english)
-    if english.match? /\A[iueoa]+/
+    english_words = english.split(' ')
+    english_words.map! do |word|
+      english_to_pig_latin(word)
+    end
+    english_words.join(' ')
+  end
+
+  private
+
+  def self.english_to_pig_latin(english)
+    if starts_with_vowels(english)
       english + 'ay'
     else
-      consonant_group = english
+      consonants = starts_with_consonants(english)
+      consonant_count = consonants.length
+      english[consonant_count..-1] + consonants + 'ay'
     end
+  end
+
+  def self.starts_with_vowels(string)
+    string[VOWELS_W_EXCEPTIONS_PATTERN]
+  end
+
+  def self.starts_with_consonants(string)
+    string[CONSONANTS_W_EXCEPTIONS_PATTERN]
   end
 
 end
 
-p PigLatin.translate('square') == 'aresquay'
+PigLatin.translate('')
