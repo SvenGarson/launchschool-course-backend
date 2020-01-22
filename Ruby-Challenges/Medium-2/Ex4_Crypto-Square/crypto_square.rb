@@ -23,28 +23,26 @@ class Crypto
 
   def normalize_ciphertext
     segments = plaintext_segments
-    segment_length = segments.first.length
+    column_size = segments.first.length
 
-    ciphertext_segments = Array.new
-    
-    (0...segment_length).each do |column|
+    columns = Array.new
 
-      column_string = ''
+    (0...column_size).each do |column_index|
+      columns << extract_column_string_at_index(segments, column_index)
+    end    
 
-      segments.each do |segment|
-        segment_char = segment[column]
-        column_string << segment_char if segment_char
-      end
-
-      ciphertext_segments << column_string
-
-    end
-
-    ciphertext_segments.join(' ')
+    columns.join(' ')
   end
 
   private
 
   attr_accessor(:base_string)
+
+  def extract_column_string_at_index(string_array, index)
+    string_array.each_with_object(String.new) do |row_string, column_string|
+      char_at_index = row_string[index]
+      column_string << char_at_index if char_at_index
+    end
+  end
 
 end
