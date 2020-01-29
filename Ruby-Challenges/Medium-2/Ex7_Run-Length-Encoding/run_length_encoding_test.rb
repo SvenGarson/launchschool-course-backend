@@ -33,7 +33,9 @@ class RunLengthEncodingTest < Minitest::Test
                  RunLengthEncoding.decode(RunLengthEncoding.encode(input))
   end
 
+
   def test_encode_unicode
+    skip
     input = '⏰⚽⚽⚽⭐⭐⏰'
     output = '⏰3⚽2⭐⏰'
     assert_equal output, RunLengthEncoding.encode(input)
