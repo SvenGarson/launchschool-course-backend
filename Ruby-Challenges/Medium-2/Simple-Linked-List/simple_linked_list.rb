@@ -35,7 +35,7 @@ class SimpleLinkedList
       old_head = head
       self.head = Element.new(data, old_head)
     end
-      
+
     self.size = size + 1
   end
 
@@ -58,7 +58,7 @@ class SimpleLinkedList
 
     size.times do |_|
       gathered_element_datums << current_element.datum
-      
+
       current_element = current_element.next
     end
 
@@ -84,5 +84,4 @@ class SimpleLinkedList
   private
 
   attr_writer(:head, :size)
-
 end
