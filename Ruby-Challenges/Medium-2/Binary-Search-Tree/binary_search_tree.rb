@@ -14,12 +14,10 @@ class Bst
       else
         self.left = Bst.new(new_data)
       end
+    elsif right
+      right.insert(new_data)
     else
-      if right
-        right.insert(new_data)
-      else
-        self.right = Bst.new(new_data)
-      end
+      self.right = Bst.new(new_data)
     end
   end
 

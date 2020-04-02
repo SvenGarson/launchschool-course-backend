@@ -6,12 +6,14 @@ class RunLengthEncoding
 
     count_char_groups.map! do |group|
       group_count = group[/\A\d+/]
-      
-      if group_count
-        decoded << group[-1] * group_count.to_i
-      else
-        decoded << group[-1]
-      end
+
+      group_to_add = if group_count
+                       group[-1] * group_count.to_i
+                     else
+                       group[-1]
+                     end
+
+      decoded << group_to_add
     end
 
     decoded
@@ -20,9 +22,9 @@ class RunLengthEncoding
   def self.encode(raw_string)
     encoded = ''
 
-    string_character_groups(raw_string).each do |group|    
+    string_character_groups(raw_string).each do |group|
       group_length = group.size
-      
+
       encode_count = group_length > 1 ? group_length.to_s : ''
       encoded << encode_count + group[0]
     end
